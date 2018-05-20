@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html>
+    <head>
+        <title>Proact'IF-Inscription</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js">  </script>
+    </head>
+    <body>
+        <a href='./index.html'> Accueil</a>
+        <h1>Inscription au service Proact'IF</h1>
+        <form id="form">
+            <div id="Genre">
+             <input type="radio" name="gender" value="male" id="Mr"> Mr
+             <input type="radio" name="gender" value="female" id="Mme"> Mme
+             <input type="radio" name="gender" value="other" id="Neutre"> Neutre
+            </div>
+             <br>
+             <input type='text' placeholder="Votre Nom" id="Nom">
+             <input type='text' placeholder="Votre Prénom" id="Pre">
+             <br>
+             <input type='date' name="Date de naissance" id="Date">
+              <input type='text' placeholder="Adresse" id="Ad">
+              <br>
+               <input type='text' placeholder="Code Postal" id="Cp">
+               <input type='text' placeholder="Ville" id="Ville">
+               <br>
+             <input type='text' placeholder="Numéro de Tel" id="Tel">
+             <br>
+             <input type='text' placeholder="Adresse Email" id="Mail">
+             <br>
+             <input type='submit' value="valider" id="bouton-inscription">
+             
+        </form>
+        
+        <script> 
+            
+            // attention ce n'est pas la valeur directos qu'on attrape mais bien l'élément html. Faire un .val 
+            function inscription (){
+                console.log("appel inscription");
+                var nom= $('#Nom').val();
+                var prenom=$('#Pre').val();
+                var genre=$('#Genre').val(); 
+                var mail=$('#Mail').val(); 
+                var tel=$('#Tel').val(); 
+                var date=$('#Date').val(); 
+                var ville=$('#Ville').val(); 
+                var cp=$('#Cp').val();
+                var ad=$('#Ad').val();
+                console.log("test capte infos");
+                //Client (genre, nom, prenom, date, ad, cp, ville, '0',tel, mail );
+               
+                $.ajax({
+                url: './ActionServlet',
+                method: 'POST',
+                data: {
+                    action:'creerClient',
+                    nom: nom,
+                    prenom: prenom,
+                    genre: genre,
+                    mail: mail,
+                    tel: tel,
+                    date: date,
+                    ville: ville,
+                    cp: cp,
+                    ad: ad
+                },
+                dataType:'json'
+            }).done(function(data){
+                    console.log(data);
+                    var inscriptionValide=data.inscription;
+                    
+                    if(inscriptionValide.validite===true){
+                        //var form=$('#form').val();
+                        //il faut clear le form et afficher un message!
+                        nom="";
+                        prenom="";
+                        console.log("Vous êtes bien inscrits");
+                        
+                    }else{
+                        console.log("Erreur");
+                    }
+                });
+                
+    }
+    
+    $(document).ready(function () {
+        // ajout d'un "handler" sur le clic du bouton de connexion
+        $('#bouton-inscription').on('click', function () {
+            // affichage pour debugage dans la console javascript du navigateur
+            console.log('Click sur le bouton "Valider"');
+            // appel de la fonction connexion
+            inscription();
+            return false;
+        });
+    });
+                
+                
+            
+        </script>
+            
+        <div>TODO write content</div>
+    </body>
+</html>

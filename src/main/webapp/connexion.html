@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html>
+    <!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+
+    <head>
+        <title>Proact'IF-Connexion</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js">  </script>
+    </head>
+    <body>
+        <a href='./index.html'> Accueil</a>
+        <h1>Connexion au service Proact'IF</h1>
+        <form id="form">
+           
+            
+             <input type='text' placeholder="Adresse Email" id="Mail">
+             <br>
+             <input type='text' placeholder="Numéro d'identification" id="Mdp">
+             <input type='submit' value="valider" id="bouton-connexion">
+             
+        </form>
+        <script>
+            
+            function connexion(){
+                var mail=$('#Mail').val();
+                var mdp=$('#Mdp').val();
+                
+                $.ajax({
+                    url:'./ActionServlet',
+                    method:'POST',
+                    data:{
+                        action:'connexion',
+                        mail:mail,
+                        mdp:mdp
+                       
+                    },
+                    dataType: 'json'
+                  }).done(function(data){
+                     var connexionValide=data.connexion;
+                     
+                     if(connexionValide.type===1){
+                         //jump dans IHM Portail Client
+                         
+                         console.log("Client connecté");
+                     }else if(connexionValide.type===2){
+                         
+                         //jump dans IHM Tableau de Bord
+                         
+                         console.log("Employé connecté");
+                         window.location='./TdBEmploye.html';
+                     }else{
+                         
+                         console.log("Erreur");
+                     }
+                      
+                  });
+            }
+            
+    $(document).ready(function () {
+        // ajout d'un "handler" sur le clic du bouton de connexion
+        $('#bouton-connexion').on('click', function () {
+            // affichage pour debugage dans la console javascript du navigateur
+            console.log('Click sur le bouton "Valider"');
+            // appel de la fonction connexion
+            connexion();
+            return false;
+        });
+    });
+        </script>
+    </body>
+</html>

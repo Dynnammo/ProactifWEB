@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html>
+    <head>
+        <title>Portail Client</title>
+        <meta charset="UTF-8" >
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <script src="https://code.jquery.com/jquery-3.3.1.min.js">  </script>
+    </head>
+    <body>        
+        <h1>Bienvenue <span id="nomClient"/>!</h1>
+        <div id="demandeIntervention">
+            <div id="typeIntervention">
+                <p>Type d'intervention</p>
+                <label for="incident">Incident</label><input name="choix" type="radio" id="incident" value="Incident (fuite d'eau ...)"/>
+                <label for="animal">Animal</label><input name="choix" type="radio" id="animal" value="Animal (à nourrir, à sortir"/>
+                <label  for="livraison">Livraison</label><input name="choix" type="radio" id="livraison" value="Livraison (réception de colis/lettres)"/>         
+            </div>
+            <div id="Description">
+                <input placeholder="Type animal" type="text" id="typeAnimal"/>
+                <input placeholder="Nom de l'entreprise" type="text" id="nomEntreprise"/>
+                <input placeholder="Type d'objet" type="text" id="typeObjet"/>
+                <p>Description</p>
+                <textarea id="texteDescription"></textarea>
+                <button id="valider">Valider</button>
+            </div>
+        </div>
+            <script>
+        var incident = $("#incident");
+        var animal = $("#animal");
+        var livraison = $("#livraison");
+        
+        var intervention = $("#typeIntervention");
+        
+        var typeObjet = $("#typeObjet");
+        var typeAnimal = $("#typeAnimal");
+        var nomEntreprise = $("#nomEntreprise");
+        hideAnimal();hideEntreprise();
+        
+        var typeIntervention = "";
+    
+        intervention.bind("click", function(){
+            if (incident.prop("checked")){
+                hideAnimal();
+                hideEntreprise();
+                typeIntervention = "incident";
+            }
+            else if (animal.prop("checked")){
+                showAnimal();
+                hideEntreprise();
+                typeIntervention = "animal";
+            }
+            else if (livraison.prop("checked")){
+                showEntreprise();
+                hideAnimal();
+                typeIntervention = "livraison";
+            }
+        });
+        
+        function showAnimal() {
+            typeAnimal.show();
+        }
+        
+        function hideAnimal(){
+            typeAnimal.hide()
+        }
+        function showEntreprise(){
+            nomEntreprise.show();
+            typeObjet.show();
+        }
+        function hideEntreprise(){
+            nomEntreprise.hide();
+            typeObjet.hide();
+        }
+        
+        //CREER VERIFICATION DE FORMULAIRE
+        
+        function demanderIntervention(){
+            var typeAnimal=$("#typeAnimal").val();
+            var typeObjet=$("#typeObjet").val();
+            var nomEntreprise = $("#nomEntreprise").val();
+            var ti = typeIntervention;
+            var description=$('#texteDescription').val();
+            
+            
+            $.ajax({
+                url:'./ActionServlet',
+                method:'POST',
+                data: {
+                    action:'demanderIntervention',
+                    typeAnimal: typeAnimal,
+                    nomEntreprise: nomEntreprise,
+                    typeObjet: typeObjet,
+                    typeIntervention: ti,
+                    description: description
+                },
+                dataType: 'json'
+            }).done(function(data){
+                var demandeIntervention = data.demandeValide;
+                if (demandeIntervention === true){
+                    alert("Demande prise en compte !");
+                    window.location('./portailClient.html');
+                } else {
+                    alert("Aucun employé est disponible,réessayer plus tard !");
+                }
+            });
+        }
+        
+        $(document).ready(function () {
+        // ajout d'un "handler" sur le clic du bouton de connexion
+        $('#valider').on('click', function () {
+            // affichage pour debugage dans la console javascript du navigateur
+            console.log('Click sur le bouton "Valider"');
+            // appel de la fonction connexion
+            demanderIntervention();
+            return false;
+            });
+        });
+    </script>
+    </body>
+</html>

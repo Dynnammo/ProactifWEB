@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Tableau de Bord</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <script src="https://code.jquery.com/jquery-3.3.1.min.js">  </script>
+    </head>
+    <body>
+        <h1>Tableau De Bord</h1>
+         <a href='./index.html'> Deconnexion</a>
+        <div style="width:1000px;height:400px;border:2px ">
+            Demandé le:<p id="date"></p>
+            Client:<p id="client"></p>
+          <br>
+          Adresse:<p id="adresse"></p>
+          Distance:<p id="distance"></p>
+          <br>
+          Type d'intervention:<p id="type"></p>
+          Type d'animal: <p id="animal"></p>
+          Type objet: <p id="obj"></p>
+          Entreprise<p id="entreprise"></p>
+          
+        </div>
+         
+         <div>
+             <input type='submit' value="Cloture" id="bouton-cloturer">
+             
+         </div>
+       <div id="floating-panel">
+      <input onclick="generateMarkers();" type=button value="Toutes les interventions">
+      <input onclick="enCours();" type=button value="Interventions En Cours" id="enCours">
+      <input onclick="soiMeme();" type=button value="Interventions Destinées à Soi-même">
+      <input onclick="autres();" type=button value="Interventions Destinées aux Autres">
+    </div>
+
+        
+          <div style="width :400px;  height:400px; border:2px" id="map"></div>
+         
+         <script type="text/javascript">
+             
+             var markers = [];
+
+             
+             function prochaineIntervention(){
+                
+                
+                
+                 $.ajax({
+                    url:'./ActionServlet',
+                    method:'POST',
+                    data:{
+                        action:'getProchaineInt',
+                       
+                       
+                       
+                    },
+                    dataType: 'json'
+                  }).done(function(data){
+                      
+                      var datas=data.container;
+                      console.log(datas);
+                      
+                      if(datas.type==="animal"){
+                      
+                          $('#animal').append(datas.animal);
+                      }else if(datas.type==="livraison"){
+                         
+                          $('#obj').html(datas.objet);
+                      
+                          $('#entreprise').html(datas.entreprise);
+                          
+                      }
+                      $('#date').append(datas.date);
+                      var client= datas.id+" "+ datas.nom+" "+datas.prenom;
+                      $('#client').html(client);
+                      $('#adresse').html(datas.adresse);
+                      $('#distance').html(datas.distance);
+                      $('#type').html(datas.type);
+                      
+                  });
+             }
+             
+             
+               var googleMapInstance = null;
+
+            function makeInfoWindow(title) {
+                return new google.maps.InfoWindow({
+                    content: '<div>Information: ' + title + '</div>'
+                });
+            }
+
+            function attachInfoWindow(marker, infowindow, htmlDescription) {
+                marker.addListener('click', function () {
+
+                    infowindow.setContent(htmlDescription);
+                    infowindow.open(googleMapInstance, this);
+                });
+            }
+             function initMap() {
+
+                googleMapInstance = new google.maps.Map(document.getElementById('map'), {
+                    center: {lat: 45.7601424, lng: 4.8961779},
+                    zoom: 13
+                    
+                     
+                });
+                
+                var marker = new google.maps.Marker({
+                        
+                        position: {lat:45.75, lng:4.85},
+                        map: googleMapInstance,
+                        title: 'Endroit #' ,
+                      
+                        
+                        });  
+                
+                
+
+                // Simuler un appel AJAX (attente 5s)
+              
+                
+            /*setTimeout(
+                generateMarkers(),
+                5000
+                );*/
+            }
+            
+            function autres(){
+                clearMarkers();
+                 console.log("Filtre yo!");
+                
+                     $.ajax({
+                    url:'./ActionServlet',
+                    method:'POST',
+                    data:{
+                        action:'getAutres'
+                       
+                       
+                       
+                    },
+                    dataType: 'json'
+                  }).done(function(data){
+                 
+                 var interventions = data.interventions;
+                    
+                    for (var i = 0; i < interventions.length; i++) {
+                      var id=interventions[i].id;  
+                      var marker = new google.maps.Marker({
+                        position: {lat:Number(interventions[i].lat),lng:Number(interventions[i].lng)},
+                        map: googleMapInstance,
+                        title: 'Endroit #' + i
+                        
+                        
+                        });  
+                        
+                        markers.push(marker);
+                        marker.addListener('click', function () {
+
+                    infowindow.setContent('<div>Intervention:'+marker.title+ '</div>');
+                        $('#idInt').html(id);
+                        infowindow.open(googleMapInstance, marker);
+                    
+                        });
+                            var infowindow = makeInfoWindow('');
+                         attachInfoWindow(
+                            marker, infowindow,
+                            '<div><strong>Intervention #' + interventions[i].id + '</strong><br/>Client : ' +interventions[i].nom+" "+interventions[i].prenom + '<br/>' +'<br> Employe: '+interventions[i].employe+'</br>'+'<br> Type : ' +interventions[i].type + '</div>'
+                            );
+                        
+                    }
+                      
+                  }); 
+            }
+         
+            function enCours(){
+                clearMarkers();
+                 console.log("Filtre yo!");
+                
+                     $.ajax({
+                    url:'./ActionServlet',
+                    method:'POST',
+                    data:{
+                        action:'getEnCours',
+                       
+                       
+                       
+                    },
+                    dataType: 'json'
+                  }).done(function(data){
+                 
+                 var interventions = data.interventions;
+                    
+                    for (var i = 0; i < interventions.length; i++) {
+                      var id=interventions[i].id;  
+                      var marker = new google.maps.Marker({
+                        position: {lat:Number(interventions[i].lat),lng:Number(interventions[i].lng)},
+                        map: googleMapInstance,
+                        title: 'Endroit #' + i
+                        
+                        
+                        });  
+                        
+                        markers.push(marker);
+                        marker.addListener('click', function () {
+
+                    infowindow.setContent('<div>Intervention:'+marker.title+ '</div>');
+                        $('#idInt').html(id);
+                        infowindow.open(googleMapInstance, marker);
+                    
+                        });
+                            var infowindow = makeInfoWindow('');
+                         attachInfoWindow(
+                            marker, infowindow,
+                            '<div><strong>Intervention #' + interventions[i].id + '</strong><br/>Client : ' +interventions[i].nom+" "+interventions[i].prenom + '<br/>' +'<br> Employe: '+interventions[i].employe+'</br>'+'<br> Type : ' +interventions[i].type + '</div>'
+                            );
+                        
+                    }
+                      
+                  }); 
+            }
+         
+        
+        function soiMeme(){
+               
+                 clearMarkers();
+                console.log("soiMeme");
+                     $.ajax({
+                    url:'./ActionServlet',
+                    method:'POST',
+                    data:{
+                        action:'getSoiMeme'
+                       
+                       
+                       
+                    },
+                    dataType: 'json'
+                  }).done(function(data){
+                 
+                 var interventions = data.interventions;
+                    
+                    for (var i = 0; i < interventions.length; i++) {
+                      var id=interventions[i].id;  
+                      var marker = new google.maps.Marker({
+                        position: {lat:Number(interventions[i].lat),lng:Number(interventions[i].lng)},
+                        map: googleMapInstance,
+                        title: 'Endroit #' + i
+                        
+                        
+                        });  
+                        markers.push(marker);
+                        marker.addListener('click', function () {
+
+                    infowindow.setContent('<div>Intervention:'+marker.title+ '</div>');
+                        $('#idInt').html(id);
+                        infowindow.open(googleMapInstance, marker);
+                    
+                        });
+                            var infowindow = makeInfoWindow('');
+                         attachInfoWindow(
+                            marker, infowindow,
+                            '<div><strong>Intervention #' + interventions[i].id + '</strong><br/>Client : ' +interventions[i].nom+" "+interventions[i].prenom + '<br/>' +'<br> Employe: '+interventions[i].employe+'</br>'+'<br> Type : ' +interventions[i].type + '</div>'
+                            );
+                        
+                    }
+                      
+                  }); 
+             }
+        
+            function setMapOnAll(map) {
+            for (var i = 0; i < markers.length; i++) {
+             markers[i].setMap(map);
+            }
+            }
+  
+            function clearMarkers() {
+            setMapOnAll(null);
+            }
+            function generateMarkers(){
+                
+                
+                $.ajax({
+                    url:'./ActionServlet',
+                    method:'POST',
+                    data:{
+                        action:'setMap'
+                       
+                       
+                       
+                    },
+                    dataType: 'json'
+                  }).done(function(data){
+                      
+                    var interventions = data.interventions;
+                    
+                    for (var i = 0; i < interventions.length; i++) {
+                      var id=interventions[i].id;  
+                      var marker = new google.maps.Marker({
+                        position: {lat:Number(interventions[i].lat),lng:Number(interventions[i].lng)},
+                        map: googleMapInstance,
+                        title: 'Endroit #' + i
+                        
+                        
+                        });  
+                        
+                        markers.push(marker);
+                        marker.addListener('click', function () {
+
+                    infowindow.setContent('<div>Intervention:'+marker.title+ '</div>');
+                        $('#idInt').html(id);
+                        infowindow.open(googleMapInstance, marker);
+                    
+                        });
+                            var infowindow = makeInfoWindow('');
+                         attachInfoWindow(
+                            marker, infowindow,
+                            '<div><strong>Intervention #' + interventions[i].idC + '</strong><br/>Client : ' +interventions[i].nom+" "+interventions[i].prenom + '<br/>' +'<br> Employe: '+interventions[i].employe+'</br>'+'<br> Type : ' +interventions[i].type + '</div>'
+                            );
+                        
+                    }
+                      
+                  });
+            }
+             
+             
+              $(document).ready(function () {
+        // ajout d'un "handler" sur le clic du bouton de connexion
+        
+            // affichage pour debugage dans la console javascript du navigateur
+            //console.log('Click sur le bouton "Valider"');
+            // appel de la fonction connexion
+            prochaineIntervention();
+            /*$('#Filtre').on('click', function (){
+                generateMarkers();
+                
+            });*/
+            
+            $('#bouton-cloturer').on('click', function () {
+                window.location='./cloturerItv.html';
+           
+            return false;
+        });
+            
+        
+    });
+       </script>      
+       <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAklw96N9rLd93ubr-F04CN7qi2ryKayAc&callback=initMap">
+       </script>    
+    </body>
+</html>
+
