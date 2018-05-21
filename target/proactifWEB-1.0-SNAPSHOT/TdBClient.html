@@ -100,8 +100,8 @@ and open the template in the editor.
                 },
                 dataType: 'json'
             }).done(function(data){
-                var demandeIntervention = data.demandeValide;
-                if (demandeIntervention === true){
+                var demandeIntervention = data.container;
+                if (demandeIntervention.interventionAcceptee === true){
                     alert("Demande prise en compte !");
                     window.location('./portailClient.html');
                 } else {

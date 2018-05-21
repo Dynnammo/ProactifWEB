@@ -53,12 +53,14 @@ and open the template in the editor.
                          //jump dans IHM Portail Client
                          
                          console.log("Client connecté");
+                         window.location='./TdBEmploye.html';
+                         console.log('OK client');
                      }else if(connexionValide.type===2){
                          
                          //jump dans IHM Tableau de Bord
-                         
                          console.log("Employé connecté");
                          window.location='./TdBEmploye.html';
+                         console.log('Ok employé');
                      }else{
                          
                          console.log("Erreur");

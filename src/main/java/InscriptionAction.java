@@ -30,10 +30,16 @@ public class InscriptionAction {
         String ad=request.getParameter("ad");
         
         String adresse= ad+ville+cp;
+        boolean insc = false;
         Client c= new Client(genre, nom, prenom, date, adresse, "0", tel, mail);
-        
-        boolean insc=ServiceClient.creerClient(c);
-        System.out.println("creqtion client");
+        if (c == ServiceClient.trouverClientParMail(mail)){
+            return insc;
+        }
+        else {
+            insc=ServiceClient.creerClient(c);
+            //System.out.println("creation client");
+
+        }
         return insc;
     }
 }

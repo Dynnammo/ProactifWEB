@@ -1,7 +1,10 @@
 ActionServlet.class
+getIntClient.class
 getSesPropresInts.class
+fr/insalyon/dasi/proactif/service/GeoTest.class
 ConnexionAction.class
 getIntDesAutres.class
+interventionAction.class
 getIntEnCours.class
 getProchaineIntervention.class
 InscriptionAction.class

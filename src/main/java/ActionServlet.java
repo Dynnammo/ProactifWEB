@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -111,8 +112,18 @@ public class ActionServlet extends HttpServlet {
                    List <Intervention> listeAu=gIDA.execute(request);
                    printSetMap(out,listeAu);
                    break;
+               case "consulterInterventions":
+                   getIntClient gIC = new getIntClient();
+                   List<Intervention> listeIntervention = gIC.execute(request);
+                   printConsulterIntervention(out,listeIntervention);
+                   break;
+               case "demanderIntervention":
+                   interventionAction iA = new interventionAction();
+                   boolean interventionAcceptee= iA.execute(request);
+                   printDemanderIntervention(out,interventionAcceptee);
+                   break;
            }
-                   
+
                   
                
             
@@ -257,6 +268,81 @@ public class ActionServlet extends HttpServlet {
                  
     
     }
+    
+    public static void printConsulterIntervention(PrintWriter out, List <Intervention> liste){
+        /*
+        On renvoie un objet de la forme {"container": [{...},{...},...]} où chaque
+        {...} est un JsonObject de la forme: {"date":...,"type":...,"typeAnimal":...,...}
+        SACHANT que TOUTES LES INTERVENTIONS ONT LES MÊMES ATTRIBUTS QUI SONT VIDES s'ils ne 
+        servent pas ie. si c'est un incident, les attr. animal, nomEntreprise et type Objet sont des
+        strings vides
+        
+        Les statuts sont à modifier
+        */
+        
+        Gson gson= new GsonBuilder().setPrettyPrinting().create();
+        
+        JsonArray jsonInterventions= new JsonArray();
+        for (Intervention intervention : liste) {
+            JsonObject jsonIntervention = new JsonObject();
+            
+            jsonIntervention.addProperty("date",intervention.getDateDebut().toString());
+            
+            if (intervention instanceof Animal){
+                jsonIntervention.addProperty("type","Animal");
+                jsonIntervention.addProperty("typeAnimal",((Animal) intervention).getTypeAnimal());
+            }
+            else if (intervention instanceof Livraison){
+                jsonIntervention.addProperty("type","Livraison");
+                jsonIntervention.addProperty("entreprise",((Livraison) intervention).getEntreprise());
+                jsonIntervention.addProperty("typeObjet",((Livraison) intervention).getObjet());
+            }
+            else{
+                jsonIntervention.addProperty("type", "Incident");
+            }
+            
+            
+            Date d = intervention.getDateDebut();
+            Calendar cal = Calendar.getInstance();
+            cal.setTime(d);
+            int year = cal.get(Calendar.YEAR);
+            jsonIntervention.addProperty("annee", year);
+            
+            
+            int statut = intervention.getEtat();
+            //A COMPLETER
+            switch(statut){
+                case (0):
+                    jsonIntervention.addProperty("statut", "En cours");
+                    break;
+                case (1):
+                    jsonIntervention.addProperty("statut", "Cloturée");
+                    break;
+                case (2):
+                    jsonIntervention.addProperty("statut", "Problème");
+                    break;
+            }
+            jsonIntervention.addProperty("commentaire", intervention.getCommentaire());
+            jsonIntervention.addProperty("description", intervention.getDescription());
+            
+            jsonInterventions.add(jsonIntervention);
+        }
+        JsonObject container= new JsonObject();
+        container.add("container",jsonInterventions);
+        out.println(gson.toJson(container));
+    }
+    
+    private void printDemanderIntervention(PrintWriter out, boolean interventionAcceptee) {
+        Gson gson= new GsonBuilder().setPrettyPrinting().create();
+        
+        JsonObject jsonInterventionAcceptee= new JsonObject();
+        jsonInterventionAcceptee.addProperty("interventionAcceptee", interventionAcceptee);
+        
+        JsonObject container= new JsonObject();
+        container.add("container",jsonInterventionAcceptee);
+        out.println(gson.toJson(container));
+    }
+    
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
      * Handles the HTTP <code>GET</code> method.
@@ -308,5 +394,7 @@ public class ActionServlet extends HttpServlet {
     public void destroy(){
         JpaUtil.destroy();
     }
+
+
 
 }
