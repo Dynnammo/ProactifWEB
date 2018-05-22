@@ -10,24 +10,30 @@ and open the template in the editor.
         <meta charset="UTF-8" >
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <script src="https://code.jquery.com/jquery-3.3.1.min.js">  </script>
+        <link href = "bootstrap/css/bootstrap.css" rel = "stylesheet">
+        <link href="//netdna.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet">
     </head>
-    <body>        
-        <h1>Bienvenue <span id="nomClient"/>!</h1>
+    <body>
+        <div class="row">
+            <a href="./index.html" class="col-lg-1"><button class="float-right text-white text-dark bg-secondary">Déconnexion</button></a>
+            <h1  class="text-center justify-content-center col-lg-10" >Bienvenue <span id="nomClient"/>!</h1>
+            <a href="./historiqueClient.html" class="col-lg-1"><button class="float-right text-white text-dark bg-secondary">Historique</button></a>
+        </div>
         <div id="demandeIntervention">
-            <div id="typeIntervention">
+            <form id="typeIntervention" class="form-group border border-dark col-3 text-center mx-auto bg-primary">
                 <p>Type d'intervention</p>
                 <label for="incident">Incident</label><input name="choix" type="radio" id="incident" value="Incident (fuite d'eau ...)"/>
                 <label for="animal">Animal</label><input name="choix" type="radio" id="animal" value="Animal (à nourrir, à sortir"/>
                 <label  for="livraison">Livraison</label><input name="choix" type="radio" id="livraison" value="Livraison (réception de colis/lettres)"/>         
-            </div>
-            <div id="Description">
-                <input placeholder="Type animal" type="text" id="typeAnimal"/>
-                <input placeholder="Nom de l'entreprise" type="text" id="nomEntreprise"/>
-                <input placeholder="Type d'objet" type="text" id="typeObjet"/>
-                <p>Description</p>
-                <textarea id="texteDescription"></textarea>
-                <button id="valider">Valider</button>
-            </div>
+                <div id="Description">
+                    <input placeholder="Type animal" type="text" id="typeAnimal"/>
+                    <input placeholder="Nom de l'entreprise" type="text" id="nomEntreprise"/>
+                    <input placeholder="Type d'objet" type="text" id="typeObjet"/>
+                    <p>Description</p>
+                    <textarea id="texteDescription"></textarea>
+                    <button id="valider">Valider</button>
+                </div>
+            </form>
         </div>
             <script>
         var incident = $("#incident");
@@ -80,12 +86,13 @@ and open the template in the editor.
         //CREER VERIFICATION DE FORMULAIRE
         
         function demanderIntervention(){
+            alert('fonction demander intervention');
             var typeAnimal=$("#typeAnimal").val();
             var typeObjet=$("#typeObjet").val();
             var nomEntreprise = $("#nomEntreprise").val();
             var ti = typeIntervention;
             var description=$('#texteDescription').val();
-            
+            console.log(typeAnimal,typeObjet,nomEntreprise,ti,description);
             
             $.ajax({
                 url:'./ActionServlet',
@@ -100,6 +107,7 @@ and open the template in the editor.
                 },
                 dataType: 'json'
             }).done(function(data){
+                console.log(data);
                 var demandeIntervention = data.container;
                 if (demandeIntervention.interventionAcceptee === true){
                     alert("Demande prise en compte !");

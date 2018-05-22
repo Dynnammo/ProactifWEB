@@ -9,12 +9,14 @@ and open the template in the editor.
         <title>Proact'IF-Inscription</title>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="https://code.jquery.com/jquery-3.3.1.min.js">  </script>
+        <link href = "bootstrap/css/bootstrap.css" rel = "stylesheet">
+        <link href="//netdna.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet">
+        <script src="https://code.jquery.com/jquery-3.3.1.min.js">  </script>
     </head>
     <body>
-        <a href='./index.html'> Accueil</a>
-        <h1>Inscription au service Proact'IF</h1>
-        <form id="form">
+        <a href='./index.html'> <img src="./home.svg"  class="col-lg-1 container"/></a>
+        <h1 class=" row text-center justify-content-center">Inscription au service Proact'IF</h1>
+        <form id="form" class="form-group border border-dark col-3 text-center mx-auto bg-primary">
             <div id="Genre">
              <input type="radio" name="gender" value="male" id="Mr"> Mr
              <input type="radio" name="gender" value="female" id="Mme"> Mme
@@ -74,13 +76,13 @@ and open the template in the editor.
             }).done(function(data){
                     console.log(data);
                     var inscriptionValide=data.inscription;
-                    
+                    console.log(mail);
                     if(inscriptionValide.validite===true){
                         //var form=$('#form').val();
                         //il faut clear le form et afficher un message!
                         nom="";
                         prenom="";
-                        console.log("Vous êtes bien inscrits");
+                        alert("Vous êtes bien inscrits");
                         
                     }else{
                         console.log("Erreur");
@@ -99,11 +101,6 @@ and open the template in the editor.
             return false;
         });
     });
-                
-                
-            
         </script>
-            
-        <div>TODO write content</div>
     </body>
 </html>

@@ -17,19 +17,23 @@ and open the template in the editor.
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://code.jquery.com/jquery-3.3.1.min.js">  </script>
+    <link href = "bootstrap/css/bootstrap.css" rel = "stylesheet">
+    <link href="//netdna.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet">
     </head>
-    <body>
-        <a href='./index.html'> Accueil</a>
-        <h1>Connexion au service Proact'IF</h1>
-        <form id="form">
-           
-            
-             <input type='text' placeholder="Adresse Email" id="Mail">
-             <br>
-             <input type='text' placeholder="Numéro d'identification" id="Mdp">
-             <input type='submit' value="valider" id="bouton-connexion">
-             
-        </form>
+    <body class="bg-primary">
+        <a href='./index.html'> <img src="./home.svg"  class="col-lg-1 container"/></a>
+        <h1 class=" row text-center justify-content-center">Connexion au service Proact'IF</h1>
+        <div class="row">
+            <form id="form" class="form-group border border-dark col-3 text-center mx-auto">
+
+                <p>Adresse mail</p>
+                <input type='text' id="Mail" class="row mx-auto" >
+                <p>Numéro d'identification</p>
+                 <input type='text' id="Mdp"class="row mx-auto">
+                 <input type='submit' value="valider" id="bouton-connexion" class="row mx-auto">
+
+            </form>
+        </div>
         <script>
             
             function connexion(){
@@ -53,14 +57,13 @@ and open the template in the editor.
                          //jump dans IHM Portail Client
                          
                          console.log("Client connecté");
-                         window.location='./TdBEmploye.html';
-                         console.log('OK client');
+                         window.location='./TdBClient.html';
                      }else if(connexionValide.type===2){
                          
                          //jump dans IHM Tableau de Bord
+                         
                          console.log("Employé connecté");
                          window.location='./TdBEmploye.html';
-                         console.log('Ok employé');
                      }else{
                          
                          console.log("Erreur");
