@@ -51,16 +51,6 @@ public class ActionServlet extends HttpServlet {
         response.setContentType("text/html;charset=UTF-8");
         HttpSession session = request.getSession(true);
         try (PrintWriter out = response.getWriter()) {
-            /* TODO output your page here. You may use following sample code. */
-           /* out.println("<!DOCTYPE html>");
-            out.println("<html>");
-            out.println("<head>");
-            out.println("<title>Servlet ActionServlet</title>");            
-            out.println("</head>");
-            out.println("<body>");
-            out.println("<h1>Servlet ActionServlet at " + request.getContextPath() + "</h1>");
-            out.println("</body>");
-            out.println("</html>");*/
            String param=request.getParameter("action");
            switch (param){
            
@@ -115,6 +105,7 @@ public class ActionServlet extends HttpServlet {
                case "consulterInterventions":
                    getIntClient gIC = new getIntClient();
                    List<Intervention> listeIntervention = gIC.execute(request);
+                   System.out.println("listeIntervention dans ActionServlet principal "+ listeIntervention);
                    printConsulterIntervention(out,listeIntervention);
                    break;
                case "demanderIntervention":
@@ -279,7 +270,10 @@ public class ActionServlet extends HttpServlet {
         
         Les statuts sont à modifier
         */
-        
+        //Intervention i = null;
+        //i = new Incident(null, null, new Date(), null, "Faux incident, je suis resté chez moi", 0, "Description 1");
+        //liste.add(i);
+        System.out.println("listeIntervention dans print" + liste);
         Gson gson= new GsonBuilder().setPrettyPrinting().create();
         
         JsonArray jsonInterventions= new JsonArray();
@@ -326,9 +320,52 @@ public class ActionServlet extends HttpServlet {
             jsonIntervention.addProperty("description", intervention.getDescription());
             
             jsonInterventions.add(jsonIntervention);
+            System.out.println("Inntervention jsonnée "+jsonIntervention);
         }
+        
+        /*
+        //CODE TEST A ENLEVER SI INTERVENTION REMARCHE
+        JsonObject jsonInterventionTestA = new JsonObject();
+        jsonInterventionTestA.addProperty("date", "01/01/1900");
+        jsonInterventionTestA.addProperty("type", "Animal");
+        jsonInterventionTestA.addProperty("typeAnimal", "Chien");
+        jsonInterventionTestA.addProperty("statut", 0);
+        jsonInterventionTestA.addProperty("annee", 2018);
+        jsonInterventionTestA.addProperty("description", "Il s'est cassée la patte");
+        jsonInterventionTestA.addProperty("commentaire", "Il est mort maintenant");
+        jsonInterventionTestA.addProperty("typeObjet", "");
+        jsonInterventionTestA.addProperty("nomEntreprise", "");
+        
+        JsonObject jsonInterventionTestI = new JsonObject();
+        jsonInterventionTestI.addProperty("date", "31/01/2018");
+        jsonInterventionTestI.addProperty("type", "Incident");
+        jsonInterventionTestI.addProperty("typeAnimal", "");
+        jsonInterventionTestI.addProperty("statut", 1);
+        jsonInterventionTestI.addProperty("annee", 2018);
+        jsonInterventionTestI.addProperty("description", "Un incident");
+        jsonInterventionTestI.addProperty("commentaire", "Plus d'incident");
+        jsonInterventionTestI.addProperty("typeObjet", "");
+        jsonInterventionTestI.addProperty("nomEntreprise", "");
+        
+        JsonObject jsonInterventionTestL = new JsonObject();
+        jsonInterventionTestL.addProperty("date", "12/03/2000");
+        jsonInterventionTestL.addProperty("type", "Livraison");
+        jsonInterventionTestL.addProperty("typeAnimal", "");
+        jsonInterventionTestL.addProperty("statut", 2);
+        jsonInterventionTestL.addProperty("annee", 2000);
+        jsonInterventionTestL.addProperty("description", "Une livraison");
+        jsonInterventionTestL.addProperty("commentaire", "Plus de livraison");
+        jsonInterventionTestL.addProperty("typeObjet", "banane");
+        jsonInterventionTestL.addProperty("nomEntreprise", "El platano");
+        jsonInterventions.add(jsonInterventionTestA);
+        jsonInterventions.add(jsonInterventionTestI);
+        jsonInterventions.add(jsonInterventionTestL);
+        */
+        //FIN DU CODE TEST
         JsonObject container= new JsonObject();
         container.add("container",jsonInterventions);
+        
+        System.out.println(jsonInterventions);
         out.println(gson.toJson(container));
     }
     

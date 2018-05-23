@@ -17,7 +17,7 @@ and open the template in the editor.
         <div class="row">
             <a href="./index.html" class="col-lg-1"><button class="float-right text-white text-dark bg-secondary">Deconnexion</button></a>
             <h1  class="text-center justify-content-center col-lg-9" >Historique <span id="nomClient"/>!</h1>
-            <a href="./portailClient.html" class="col-lg-2"><button class="float-right text-white text-dark bg-secondary">Retour au portail</button></a>
+            <a href="./TdBClient.html" class="col-lg-2"><button class="float-right text-white text-dark bg-secondary">Retour au portail</button></a>
         </div>
         <div class="row">
             <form id="filtre" class="col-lg-3">
@@ -60,17 +60,7 @@ and open the template in the editor.
                 <button id="bouton-filtrer">Filtrer</button>
             </form>
             <div class="col-lg-9"/>
-            <table id="liste-interventions" class="text-dark">
-                    <thead>
-                    <th>Date de la demande</th>
-                    <th>Type</th>
-                    <th>Etat</th>
-                    <th>Type d'animal</th>
-                    <th>Entreprise</th>
-                    <th>Type d'objet</th>
-                    </thead>
-                    <tbody id="historique"/>
-                </table>
+            <table id="liste-interventions" class="text-dark"></table>
                 <div>
                     <label for="description">Description</label>
                     <div id='description'></div>
@@ -82,20 +72,51 @@ and open the template in the editor.
             </div>
         </div>
         <script type="text/javascript">
-            console.log("test page1");
-            function ajouter(intervention){
-                $("#historique").append(
-                    "<tr>"+
-                        "<td>"+intervention.date+"</td>"+
-                        "<td>"+intervention.type+"</td>"+
-                        "<td>"+intervention.typeAnimal+"</td>"+
-                        "<td>"+intervention.entreprise+"</td>"+
-                        "<td>"+intervention.typeObjet+"</td>"+
-                    "</tr>"
-                )
-            }
-            
+        function ajouterInterventions(data){
+            var baliseDescription = $("#description");
+            var baliseCommentaire = $("#commentaire");
+            //Build an array containing Customer records.
+            console.log("mes interventions")
+                   var rowIntervention = new Array();
+                   rowIntervention.push(["Date de la demande", "Type", "Etat","Type d'animal","Entreprise","Type d'objet"]);
+                   for(var i =0 ;i<data.container.length;i++){
+                       rowIntervention.push([data.container[i].date,data.container[i].type,data.container[i].statut,data.container[i].typeAnimal,data.container[i].nomEntreprise,data.container[i].typeObjet,data.container[i].description,data.container[i].commentaire]);
+                   }
+                   //rowIntervention.push([intervention.date,intervention.type, intervention.statut, intervention.typeAnimal, intervention.nomEntreprise, intervention.typeObjet]);
+
+                   //Create a HTML Table element.
+                   var table = $("<table />");
+                   table[0].border = "1";
+
+                   //Get the count of columns.
+                   var columnCount = rowIntervention[0].length;
+
+                   //Add the header row.
+                   var row = $(table[0].insertRow(-1));
+                   for (var i = 0; i < columnCount; i++) {
+                       var headerCell = $("<th />");
+                       headerCell.html(rowIntervention[0][i]);
+                       row.append(headerCell);
+                   }
+
+                   //Add the data rows.
+                   for (var i = 1; i < rowIntervention.length; i++) {
+                       row = $(table[0].insertRow(-1));
+                       for (var j = 0; j < columnCount; j++) {
+                           var cell = $("<td />");
+                           cell.html(rowIntervention[i][j]);
+                           console.log(rowIntervention[i][1]);
+                           row.append(cell);
+                       }    
+                   }
+
+                   var dvTable = $("#liste-interventions");
+                   dvTable.html("");
+                   dvTable.append(table);
+               }
+
             function triTypeIntervention(listeIntervention, typeIntervention){
+                console.log("Tri en fonction du type");
                 var listeFiltree=listeIntervention;
                 for (var i in listeIntervention) {
                     if (i.type !== typeIntervention){
@@ -106,6 +127,7 @@ and open the template in the editor.
             }
             
             function triAnneeIntervention(listeIntervention, annee){
+                console.log("Tri en fonction de l'année");
                 var listeFiltree=listeIntervention;
                 for (var i in listeIntervention){
                     if (i.annee !== annee){
@@ -116,6 +138,7 @@ and open the template in the editor.
             }
             
             function triStatutIntervention(listeIntervention, statut){
+                console.log("Tri en fonction du statut");
                 var listeFiltree=listeIntervention;
                 for (var i in listeIntervention){
                     if (i.statut !== statut){
@@ -157,7 +180,7 @@ and open the template in the editor.
                 //Affichage actualisé
                 $('#historique').empty()
                 for (var i in listeFiltree) {
-                    ajouter(i);
+                    ajouterInterventions(i);
                 }
             }
             
@@ -176,16 +199,15 @@ and open the template in the editor.
                     
                     $('#historique').empty();
                     var interventions = data.container;
+                    console.log(interventions);
                     /*var interventions = {
                         {
                             "date":2015,
                             "annee"
                         }
                     }*/
-                    for (var i in interventions) {
-                        ajouter(i);
-                    }
-                    console.log("Appel fonctionTri");
+                    
+                    ajouterInterventions(data);
                     triIntervention();
                     return false;
                 });

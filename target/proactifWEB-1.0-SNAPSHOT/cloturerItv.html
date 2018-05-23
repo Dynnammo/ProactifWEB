@@ -9,8 +9,104 @@ and open the template in the editor.
         <title>TODO supply a title</title>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<link rel="stylesheet" href="css/bootstrap.min.css">
+		<link rel="stylesheet" href="css/bootstrap-theme.min.css">
+        <script src="https://code.jquery.com/jquery-3.3.1.min.js">  </script>
     </head>
     <body>
-        <div>TODO write content</div>
+        <div class="row">
+        <div class="col-sm-10">
+        <div class="card text-white bg-secondary mb-3" style="max-width: 30rem;">
+      <div class="card-body">
+        <h1>Cloturer Intervention</h1>
+        <div style="width:1000px;height:400px;border:2px ">
+            <form id="myForm">
+            <input type='date' name="Fin de l'intervention" id="date">
+         
+          <br>
+          <label for="option_1">Sans Probleme</label>
+            <input type="radio" name="option" id="option_1" value="Sans probleme">
+            <label for="option_2">Avec Probleme</label>
+            <input type="radio" name="option" id="option_2" value="Avec Probleme">  
+            <br>
+          <label for="commentaire">
+
+       Commentaire:
+       
+       </label>
+            <br>
+          <textarea name="commentaire" id="commentaire" rows="10" cols="50"> A saisir</textarea>
+            <div>
+              <input type='submit' value="valider" id="bouton-valider">
+              <input onclick="annuler();" type=button value="Annuler">
+         </div>
+            </form>
+        </div>
+      </div>
+        </div>
+        </div>
+          
+        </div>
+        <script type="text/javascript"> 
+            
+            // attention ce n'est pas la valeur directos qu'on attrape mais bien l'élément html. Faire un .val 
+            function cloturer (){
+                
+                var realisation= $('input[name="option"]:checked').val();
+                var commentaire=document.getElementById("commentaire").value;
+                var date=document.getElementById("date").value; 
+              
+               
+                //Client (genre, nom, prenom, date, ad, cp, ville, '0',tel, mail );
+               
+                $.ajax({
+                url: './ActionServlet',
+                method: 'POST',
+                data: {
+                    action:'cloturerItv',
+                    commentaire: commentaire,
+                    realisation: realisation,
+                    date: date
+                   
+                },
+                dataType:'json'
+            }).done(function(data){
+                    console.log(data);
+                    var cloturationValide=data.cloturation;
+                    
+                    if(cloturationValide.type===true){
+                        //var form=$('#form').val();
+                        //il faut clear le form et afficher un message!
+                        console.log("Cloturation exécuté avec succès");
+                        window.location='./TdBEmploye.html';
+                        
+                    }else{
+                        console.log("Erreur");
+                    }
+                });
+                
+    }
+    
+    function annuler(){
+        document.getElementById("myForm").reset(); 
+    }
+    
+     
+        $(document).ready(function () {
+        // ajout d'un "handler" sur le clic du bouton de connexion
+        $('#bouton-valider').on('click', function () {
+            // affichage pour debugage dans la console javascript du navigateur
+            console.log('Click sur le bouton "Valider"');
+            // appel de la fonction connexion
+            cloturer();
+            return false;
+        });
+    });
+             
+   
+    
+    </script>
     </body>
 </html>
+
+ 

@@ -29,10 +29,11 @@ class interventionAction {
         String nomEntreprise = request.getParameter("nomEntreprise");
         String typeObjet = request.getParameter("typeObjet");
         String description = request.getParameter("description");
+        
         Intervention i = null;
         switch (typeIntervention){
             case "incident":
-                i = new Incident(null, c, new Date(), null, nomEntreprise, 0, description);  
+                i = new Incident(null, c, new Date(), null, "", 0, description);  
                 break;
             case "animal":
                 i = new Animal(null, c, new Date(), null, "", 0, description, typeAnimal);
@@ -40,8 +41,10 @@ class interventionAction {
             case "livraison":
                 i = new Livraison(null, c, new Date(), null, "", 0, description, typeObjet, nomEntreprise);
         }
+        System.out.println("Intervention " + i.toString());
         
         boolean interventionAcceptee = ServiceClient.creerIntervention(i);
+        System.out.println("etat de l'intervention"+interventionAcceptee);
         return interventionAcceptee;
     }
     

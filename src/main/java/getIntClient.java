@@ -24,6 +24,7 @@ class getIntClient {
         Client c = (Client) session.getAttribute("client");
         
         List<Intervention> lI = ServiceClient.consulterHistorique(c);
+        System.out.println("liste interventions dans l'actionServlet dédié: "+lI);
         return lI;
     }
 }
