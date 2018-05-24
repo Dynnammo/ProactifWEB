@@ -39,7 +39,6 @@ and open the template in the editor.
             function connexion(){
                 var mail=$('#Mail').val();
                 var mdp=$('#Mdp').val();
-                
                 $.ajax({
                     url:'./ActionServlet',
                     method:'POST',
@@ -47,12 +46,11 @@ and open the template in the editor.
                         action:'connexion',
                         mail:mail,
                         mdp:mdp
-                       
                     },
                     dataType: 'json'
                   }).done(function(data){
                      var connexionValide=data.connexion;
-                     
+                     console.log(data);
                      if(connexionValide.type===1){
                          //jump dans IHM Portail Client
                          
