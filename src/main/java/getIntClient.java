@@ -19,12 +19,9 @@ import javax.servlet.http.HttpSession;
 class getIntClient {
 
     List<Intervention> execute(HttpServletRequest request) {
-         //To change body of generated methods, choose Tools | Templates.
         HttpSession session = request.getSession();
         Client c = (Client) session.getAttribute("client");
-        
         List<Intervention> lI = ServiceClient.consulterHistorique(c);
-        System.out.println("liste interventions dans l'actionServlet dédié: "+lI);
         return lI;
     }
 }

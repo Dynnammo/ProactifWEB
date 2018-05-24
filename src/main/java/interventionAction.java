@@ -33,13 +33,13 @@ class interventionAction {
         Intervention i = null;
         switch (typeIntervention){
             case "incident":
-                i = new Incident(null, c, new Date(), null, "", 0, description);  
+                i = new Incident(null, c, new Date(), null, "Aucun commentaire", 0, description);  
                 break;
             case "animal":
-                i = new Animal(null, c, new Date(), null, "", 0, description, typeAnimal);
+                i = new Animal(null, c, new Date(), null, "Aucun commentaire", 0, description, typeAnimal);
                 break;
             case "livraison":
-                i = new Livraison(null, c, new Date(), null, "", 0, description, typeObjet, nomEntreprise);
+                i = new Livraison(null, c, new Date(), null, "Aucun commentaire", 0, description, typeObjet, nomEntreprise);
         }
         System.out.println("Intervention " + i.toString());
         

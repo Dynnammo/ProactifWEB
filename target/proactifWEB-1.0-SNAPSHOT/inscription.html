@@ -18,15 +18,16 @@ and open the template in the editor.
         <h1 class=" row text-center justify-content-center">Inscription au service Proact'IF</h1>
         <form id="form" class="form-group border border-dark col-3 text-center mx-auto bg-primary">
             <div id="Genre">
-             <input type="radio" name="gender" value="male" id="Mr"> Mr
-             <input type="radio" name="gender" value="female" id="Mme"> Mme
-             <input type="radio" name="gender" value="other" id="Neutre"> Neutre
+             <label for="gender">Civilité</label>
+             <input type="radio" name="gender" value="Mr" id="Mr"> Mr
+             <input type="radio" name="gender" value="Mme" id="Mme"> Mme
+             <input type="radio" name="gender" value="Neutre" id="Neutre"> Neutre
             </div>
              <br>
              <input type='text' placeholder="Votre Nom" id="Nom">
              <input type='text' placeholder="Votre Prénom" id="Pre">
              <br>
-             <input type='date' name="Date de naissance" id="Date">
+             <input type='date' name="Date de naissance" placeholder="jj/mm/annee" id="Date">
               <input type='text' placeholder="Adresse" id="Ad">
               <br>
                <input type='text' placeholder="Code Postal" id="Cp">
@@ -47,56 +48,55 @@ and open the template in the editor.
                 console.log("appel inscription");
                 var nom= $('#Nom').val();
                 var prenom=$('#Pre').val();
-                var genre=$('#Genre').val(); 
+                var genre= $('input[name=gender]:checked', '#form').val();
                 var mail=$('#Mail').val(); 
                 var tel=$('#Tel').val(); 
-                var date=$('#Date').val(); 
+                var dateRecue= new Date($('#Date').val().toString());
+                var date = dateRecue.getDate()+"/"+(dateRecue.getMonth()+1)+"/"+dateRecue.getFullYear();
                 var ville=$('#Ville').val(); 
                 var cp=$('#Cp').val();
                 var ad=$('#Ad').val();
-                console.log("test capte infos");
-                //Client (genre, nom, prenom, date, ad, cp, ville, '0',tel, mail );
-               
-                $.ajax({
-                url: './ActionServlet',
-                method: 'POST',
-                data: {
-                    action:'creerClient',
-                    nom: nom,
-                    prenom: prenom,
-                    genre: genre,
-                    mail: mail,
-                    tel: tel,
-                    date: date,
-                    ville: ville,
-                    cp: cp,
-                    ad: ad
-                },
-                dataType:'json'
-            }).done(function(data){
-                    console.log(data);
-                    var inscriptionValide=data.inscription;
-                    console.log(mail);
-                    if(inscriptionValide.validite===true){
-                        //var form=$('#form').val();
-                        //il faut clear le form et afficher un message!
-                        nom="";
-                        prenom="";
-                        alert("Vous êtes bien inscrits");
-                        
-                    }else{
-                        console.log("Erreur");
-                    }
-                });
+                if(!(nom && prenom && genre && mail && genre && tel && date && ville && cp && ad)){
+                    alert("Le formulaire contient des saisies invalides");
+                } else {               
+                    $.ajax({
+                    url: './ActionServlet',
+                    method: 'POST',
+                    data: {
+                        action:'creerClient',
+                        nom: nom,
+                        prenom: prenom,
+                        genre: genre,
+                        mail: mail,
+                        tel: tel,
+                        date: date,
+                        ville: ville,
+                        cp: cp,
+                        ad: ad
+                    },
+                    dataType:'json'
+                    }).done(function(data){
+                        console.log(data);
+                        var inscriptionValide=data.inscription;
+                        console.log(mail);
+                        if(inscriptionValide.validite===true){
+                            //var form=$('#form').val();
+                            //il faut clear le form et afficher un message!
+                            nom="";
+                            prenom="";
+                            alert("Vous êtes bien inscrit.Une notification vous a été envoyé avec votre numéro d'identification");
+                            window.location ="./index.html";
+
+                        }else{
+                            alert("Erreur d'inscription");
+                        }
+                    });
+            }
                 
     }
     
     $(document).ready(function () {
-        // ajout d'un "handler" sur le clic du bouton de connexion
         $('#bouton-inscription').on('click', function () {
-            // affichage pour debugage dans la console javascript du navigateur
-            console.log('Click sur le bouton "Valider"');
-            // appel de la fonction connexion
             inscription();
             return false;
         });

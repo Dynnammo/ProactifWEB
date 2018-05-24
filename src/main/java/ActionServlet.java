@@ -18,6 +18,7 @@ import fr.insalyon.dasi.proactif.service.GeoTest;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -28,6 +29,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -46,7 +49,7 @@ public class ActionServlet extends HttpServlet {
      * @throws IOException if an I/O error occurs
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
+            throws ServletException, IOException, ParseException {
         
         response.setContentType("text/html;charset=UTF-8");
         HttpSession session = request.getSession(true);
@@ -67,9 +70,7 @@ public class ActionServlet extends HttpServlet {
                    
                    break;
                    
-               case "getProchaineInt":
-                   //System.out.println("------------------------");
-                           
+               case "getProchaineInt":                           
                        getProchaineIntervention gPI= new getProchaineIntervention();
                        Intervention i=gPI.execute(request);
                        printProchaineIntervention(out,i);
@@ -88,6 +89,7 @@ public class ActionServlet extends HttpServlet {
                case "getEnCours":
                     getIntEnCours gEC= new getIntEnCours();
                     List <Intervention> listeEC=gEC.execute(request);
+                    System.out.println("dans l'action"+listeEC);
                     printSetMap(out,listeEC);
                     break;
                     
@@ -113,9 +115,19 @@ public class ActionServlet extends HttpServlet {
                    boolean interventionAcceptee= iA.execute(request);
                    printDemanderIntervention(out,interventionAcceptee);
                    break;
+                case "deconnexion":
+                    session = request.getSession(false);
+                               case "cloturerItv":
+                   getProchaineIntervention gPI2= new getProchaineIntervention();
+                   Intervention intervention=gPI2.execute(request);
+                    System.out.println("je passe dans l'action servlet");
+                   cloturerIntervention cla= new cloturerIntervention();
+                   boolean cloturationValide= cla.execute(request, intervention);
+                   System.out.println(cloturationValide);
+                   printCloturerIntervention(out,cloturationValide);
+                   break;
            }
 
-                  
                
             
             
@@ -201,38 +213,39 @@ public class ActionServlet extends HttpServlet {
         JsonArray jsonListe = new JsonArray();
         LatLng origine;
         LatLng destination;
-        /*LatLng test=GeoTest.getLatLng(liste.get(0).getItvClient().getAdresse());
-        String t=test.toString();
-        System.out.println("Je vais afficher LatLng");
-        System.out.println("LatLng: "+t);*/
+        System.out.println("Je suis dans print");
             for(Intervention intervention : liste){
-               //origine= GeoTest.getLatLng(intervention.getItvEmploye().getAdresse()); 
                destination=GeoTest.getLatLng(intervention.getItvClient().getAdresse());
                
-               //String o=origine.toString();
                String d=destination.toString();
                String Lat=d.substring(0, d.indexOf(','));
                String Lng=d.substring(d.indexOf(',')+1, d.length());
-               //System.out.println("Lat : "+Lat);
-               //System.out.println("Lng :"+Lng);
-               
+                System.out.println("creation du jsonIntervention");
                JsonObject jsonIntervention  = new JsonObject();
                jsonIntervention.addProperty("lat",Lat);
                jsonIntervention.addProperty("lng",Lng);
-               Date today= intervention.getDateDebut();
-               DateFormat df = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
-               Date fin=intervention.getDateFin();
-               String dateDeb=df.format(today);
-               String dateFin=df.format(fin);
-               jsonIntervention.addProperty("dateDeb",dateDeb);
-               jsonIntervention.addProperty("dateFin",dateFin);
-               //jsonIntervention.addProperty("idE", intervention.ge);
+                System.out.println("remplissage gps");
+                DateFormat df = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
+                Date today= intervention.getDateDebut();
+                String dateDeb=df.format(today);
+                jsonIntervention.addProperty("dateDeb",dateDeb);
+               try{
+                    Date fin=intervention.getDateFin();
+                    String dateFin=df.format(fin);
+                    jsonIntervention.addProperty("dateFin",dateFin);
+               } catch(Exception e) {
+                   System.err.println("Echec du parsing de date fin");
+               }
+
+
+                System.out.println("remplissage date");
+               jsonIntervention.addProperty("idE", intervention.getItvEmploye().getId());
                jsonIntervention.addProperty("idC", intervention.getItvClient().getId());
                jsonIntervention.addProperty("nom", intervention.getItvClient().getNom());
                jsonIntervention.addProperty("prenom", intervention.getItvClient().getPrenom());
                jsonIntervention.addProperty("adresse",intervention.getItvClient().getAdresse());
                jsonIntervention.addProperty("employe",intervention.getItvEmploye().getNom()+" "+intervention.getItvEmploye().getPrenom()+" "+intervention.getItvEmploye().getId());
-                
+                System.out.println("remplissage infos");
                if(intervention instanceof Animal){
                   jsonIntervention.addProperty("animal",((Animal) intervention).getTypeAnimal());
                   jsonIntervention.addProperty("type","animal");
@@ -245,9 +258,8 @@ public class ActionServlet extends HttpServlet {
                  jsonIntervention.addProperty("entreprise",((Livraison) intervention).getEntreprise());
                  jsonIntervention.addProperty("type","livraison");
                  
-
+                 
               }
-                
                jsonListe.add(jsonIntervention);
                
             }
@@ -322,50 +334,8 @@ public class ActionServlet extends HttpServlet {
             jsonInterventions.add(jsonIntervention);
             System.out.println("Inntervention jsonnée "+jsonIntervention);
         }
-        
-        /*
-        //CODE TEST A ENLEVER SI INTERVENTION REMARCHE
-        JsonObject jsonInterventionTestA = new JsonObject();
-        jsonInterventionTestA.addProperty("date", "01/01/1900");
-        jsonInterventionTestA.addProperty("type", "Animal");
-        jsonInterventionTestA.addProperty("typeAnimal", "Chien");
-        jsonInterventionTestA.addProperty("statut", 0);
-        jsonInterventionTestA.addProperty("annee", 2018);
-        jsonInterventionTestA.addProperty("description", "Il s'est cassée la patte");
-        jsonInterventionTestA.addProperty("commentaire", "Il est mort maintenant");
-        jsonInterventionTestA.addProperty("typeObjet", "");
-        jsonInterventionTestA.addProperty("nomEntreprise", "");
-        
-        JsonObject jsonInterventionTestI = new JsonObject();
-        jsonInterventionTestI.addProperty("date", "31/01/2018");
-        jsonInterventionTestI.addProperty("type", "Incident");
-        jsonInterventionTestI.addProperty("typeAnimal", "");
-        jsonInterventionTestI.addProperty("statut", 1);
-        jsonInterventionTestI.addProperty("annee", 2018);
-        jsonInterventionTestI.addProperty("description", "Un incident");
-        jsonInterventionTestI.addProperty("commentaire", "Plus d'incident");
-        jsonInterventionTestI.addProperty("typeObjet", "");
-        jsonInterventionTestI.addProperty("nomEntreprise", "");
-        
-        JsonObject jsonInterventionTestL = new JsonObject();
-        jsonInterventionTestL.addProperty("date", "12/03/2000");
-        jsonInterventionTestL.addProperty("type", "Livraison");
-        jsonInterventionTestL.addProperty("typeAnimal", "");
-        jsonInterventionTestL.addProperty("statut", 2);
-        jsonInterventionTestL.addProperty("annee", 2000);
-        jsonInterventionTestL.addProperty("description", "Une livraison");
-        jsonInterventionTestL.addProperty("commentaire", "Plus de livraison");
-        jsonInterventionTestL.addProperty("typeObjet", "banane");
-        jsonInterventionTestL.addProperty("nomEntreprise", "El platano");
-        jsonInterventions.add(jsonInterventionTestA);
-        jsonInterventions.add(jsonInterventionTestI);
-        jsonInterventions.add(jsonInterventionTestL);
-        */
-        //FIN DU CODE TEST
         JsonObject container= new JsonObject();
         container.add("container",jsonInterventions);
-        
-        System.out.println(jsonInterventions);
         out.println(gson.toJson(container));
     }
     
@@ -380,6 +350,17 @@ public class ActionServlet extends HttpServlet {
         out.println(gson.toJson(container));
     }
     
+    public static void printCloturerIntervention(PrintWriter out, boolean cloturationValide){
+         Gson gson= new GsonBuilder().setPrettyPrinting().create();
+        
+        JsonObject jsonCo= new JsonObject();
+        
+        jsonCo.addProperty("type", cloturationValide);
+        JsonObject container= new JsonObject();
+        container.add("cloturation",jsonCo);
+        out.println(gson.toJson(container));          
+    }
+    
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
      * Handles the HTTP <code>GET</code> method.
@@ -392,7 +373,11 @@ public class ActionServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+        try {
+            processRequest(request, response);
+        } catch (ParseException ex) {
+            Logger.getLogger(ActionServlet.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     /**
@@ -406,7 +391,11 @@ public class ActionServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+        try {
+            processRequest(request, response);
+        } catch (ParseException ex) {
+            Logger.getLogger(ActionServlet.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     /**

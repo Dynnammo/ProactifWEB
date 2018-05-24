@@ -25,7 +25,6 @@ public class getProchaineIntervention {
     public Intervention execute(HttpServletRequest request){
         
         HttpSession session = request.getSession();
-        //System.out.println("session");
         Employe employe = (Employe)session.getAttribute("employe");
         
         System.out.println("emp = " + employe);
@@ -41,29 +40,6 @@ public class getProchaineIntervention {
                     return intervention;
                 }
             }
-        
-            
-       
-             /* request.setAttribute("date", intervention.getDateDebut());
-              request.setAttribute("client", intervention.getItvClient());
-              request.setAttribute("adresse", intervention.getItvClient().getAdresse());
-              if(intervention instanceof Animal){
-                  request.setAttribute("animal",((Animal) intervention).getTypeAnimal());
-                  return intervention;
-              }else if(intervention instanceof Incident){
-                  
-                  return intervention;
-              }else{
-                  
-                  request.setAttribute("type","livraison");
-
-              }
-            }
-        }*/
-       
-        
-        
-        
     }       
         return null;
     

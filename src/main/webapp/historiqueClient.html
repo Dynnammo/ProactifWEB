@@ -73,8 +73,6 @@ and open the template in the editor.
         </div>
         <script type="text/javascript">
         function ajouterInterventions(data){
-            var baliseDescription = $("#description");
-            var baliseCommentaire = $("#commentaire");
             //Build an array containing Customer records.
             console.log("mes interventions")
                    var rowIntervention = new Array();
@@ -98,23 +96,37 @@ and open the template in the editor.
                        headerCell.html(rowIntervention[0][i]);
                        row.append(headerCell);
                    }
-
+                   
                    //Add the data rows.
-                   for (var i = 1; i < rowIntervention.length; i++) {
-                       row = $(table[0].insertRow(-1));
-                       for (var j = 0; j < columnCount; j++) {
-                           var cell = $("<td />");
-                           cell.html(rowIntervention[i][j]);
-                           console.log(rowIntervention[i][1]);
-                           row.append(cell);
-                       }    
-                   }
-
-                   var dvTable = $("#liste-interventions");
-                   dvTable.html("");
-                   dvTable.append(table);
+                    for (var i = 1; i < rowIntervention.length; i++) {
+                        row = $(table[0].insertRow(-1));
+                        var desc = rowIntervention[i][6];
+                        var com = rowIntervention[i][7];
+                        for (var j = 0; j < columnCount; j++) {
+                            var cell = $("<td />");
+                            cell.html(rowIntervention[i][j]);
+                            row.append(cell);
+                        }    
+                    var dvTable = $("#liste-interventions");
+                    dvTable.html("");
+                    dvTable.append(table);
                }
-
+           }
+           //A TERMINER : affichage de description et commentaire
+            function infosDetaillees(descI,comI){
+                alert(descI,comI);
+                var baliseDescription = $("#description");
+                var baliseCommentaire = $("#commentaire");
+                baliseDescription.empty();
+                baliseCommentaire.empty();
+                if(descI){
+                     baliseDescription.html(descI);
+                 }
+                if(comI){
+                    baliseCommentaire.html(comI);
+                }
+            }
+            
             function triTypeIntervention(listeIntervention, typeIntervention){
                 console.log("Tri en fonction du type");
                 var listeFiltree=listeIntervention;
@@ -164,6 +176,7 @@ and open the template in the editor.
                    if ($("input[name='gender']:checked").val())
                        statut = $("input[name='gender']:checked").val()
                 })
+                console.log(typeIntervention,annee,statut);
                 
                 //Filtrage
                 var listeFiltree=listeIntervention;
@@ -194,9 +207,7 @@ and open the template in the editor.
           
                     },
                     dataType: 'json'
-                }).done(function(data) {
-                    console.log("ok1");
-                    
+                }).done(function(data) {                    
                     $('#historique').empty();
                     var interventions = data.container;
                     console.log(interventions);
@@ -211,9 +222,8 @@ and open the template in the editor.
                     triIntervention();
                     return false;
                 });
-            })
+            });
             console.log("fin page]");
-            
         </script>
     </body>
 </html>

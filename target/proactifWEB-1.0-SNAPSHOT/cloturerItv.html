@@ -22,6 +22,7 @@ and open the template in the editor.
         <div style="width:1000px;height:400px;border:2px ">
             <form id="myForm">
             <input type='date' name="Fin de l'intervention" id="date">
+            <!--<input type="time" id="time">-->
          
           <br>
           <label for="option_1">Sans Probleme</label>
@@ -35,11 +36,11 @@ and open the template in the editor.
        
        </label>
             <br>
-          <textarea name="commentaire" id="commentaire" rows="10" cols="50"> A saisir</textarea>
+          <textarea name="commentaire" id="commentaire" rows="10" cols="50"></textarea>
             <div>
               <input type='submit' value="valider" id="bouton-valider">
               <input onclick="annuler();" type=button value="Annuler">
-         </div>
+            </div>
             </form>
         </div>
       </div>
@@ -48,17 +49,10 @@ and open the template in the editor.
           
         </div>
         <script type="text/javascript"> 
-            
-            // attention ce n'est pas la valeur directos qu'on attrape mais bien l'élément html. Faire un .val 
+            var realisation= $('input[name="option"]:checked').val();
+            var commentaire= $("#commentaire").val();
+            var date= $("#date").val();   
             function cloturer (){
-                
-                var realisation= $('input[name="option"]:checked').val();
-                var commentaire=document.getElementById("commentaire").value;
-                var date=document.getElementById("date").value; 
-              
-               
-                //Client (genre, nom, prenom, date, ad, cp, ville, '0',tel, mail );
-               
                 $.ajax({
                 url: './ActionServlet',
                 method: 'POST',
@@ -67,44 +61,38 @@ and open the template in the editor.
                     commentaire: commentaire,
                     realisation: realisation,
                     date: date
-                   
                 },
                 dataType:'json'
             }).done(function(data){
                     console.log(data);
                     var cloturationValide=data.cloturation;
-                    
                     if(cloturationValide.type===true){
                         //var form=$('#form').val();
                         //il faut clear le form et afficher un message!
-                        console.log("Cloturation exécuté avec succès");
+                        alert("Cloturation exécuté avec succès");
                         window.location='./TdBEmploye.html';
                         
                     }else{
-                        console.log("Erreur");
+                        alert("Erreur");
                     }
                 });
                 
     }
     
     function annuler(){
-        document.getElementById("myForm").reset(); 
+        $("#commentaire").empty();
+         document.querySelector("form").reset();
     }
     
      
         $(document).ready(function () {
+        $("#date").val(new Date().toISOString().substring(0, 10).toString());
         // ajout d'un "handler" sur le clic du bouton de connexion
         $('#bouton-valider').on('click', function () {
-            // affichage pour debugage dans la console javascript du navigateur
-            console.log('Click sur le bouton "Valider"');
-            // appel de la fonction connexion
             cloturer();
             return false;
         });
-    });
-             
-   
-    
+    });    
     </script>
     </body>
 </html>

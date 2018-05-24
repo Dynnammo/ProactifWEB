@@ -18,7 +18,6 @@ import javax.servlet.http.HttpServletRequest;
  * @author PAPE leo
  */
 public class getIntEnCours {
-    
     public List <Intervention> execute(HttpServletRequest request){
         
         
@@ -35,11 +34,9 @@ public class getIntEnCours {
                 if(etat==0){
                     System.out.println("Je rajoute des bails dans listeEC");
                     listeEC.add(intervention);
-                    
-                   
                 }
         
         }       
         return listeEC;
-}
+    }
 }
