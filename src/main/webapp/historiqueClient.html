@@ -20,6 +20,7 @@ and open the template in the editor.
             <a href="./TdBClient.html" class="col-lg-2"><button class="float-right text-white text-dark bg-secondary">Retour au portail</button></a>
         </div>
         <div class="row">
+            <!--
             <form id="filtre" class="col-lg-3">
                 <h2>Filtrer intervention</h2>
                 <input name="statut" type="radio" id="enCours">En cours
@@ -45,11 +46,6 @@ and open the template in the editor.
                     <option value="2002">2002</option>
                     <option value="2001">2001</option>
                     <option value="2000">2000</option>
-                    <option value="1999">1999</option>
-                    <option value="1998">1998</option>
-                    <option value="1997">1997</option>
-                    <option value="1996">1996</option>
-                    <option value="1995">1995</option>
                 </select>
                 <input type="radio" name="type" id="selectType">
                 <select id="choixType" name="Type">
@@ -57,29 +53,29 @@ and open the template in the editor.
                     <option value="Incident">Incident</option>
                     <option value="Livraison">Livraison</option>
                 </select>
-                <button id="bouton-filtrer">Filtrer</button>
-            </form>
+                <button onclick="filtrage()" id="bouton-filtrer">Filtrer</button>
+            </form>-->
             <div class="col-lg-9"/>
-            <table id="liste-interventions" class="text-dark"></table>
-                <div>
+            <table  id="liste-interventions" class="text-dark"></table>
+                <!--<div>
                     <label for="description">Description</label>
                     <div id='description'></div>
                 </div>
                 <div>
                     <label for="commentaire">Commentaire</label>
                     <div id='commentaire'/></div>
-                </div>
+                </div>-->
             </div>
         </div>
         <script type="text/javascript">
         function ajouterInterventions(data){
             //Build an array containing Customer records.
-            console.log("mes interventions")
                    var rowIntervention = new Array();
                    rowIntervention.push(["Date de la demande", "Type", "Etat","Type d'animal","Entreprise","Type d'objet"]);
                    for(var i =0 ;i<data.container.length;i++){
-                       rowIntervention.push([data.container[i].date,data.container[i].type,data.container[i].statut,data.container[i].typeAnimal,data.container[i].nomEntreprise,data.container[i].typeObjet,data.container[i].description,data.container[i].commentaire]);
-                   }
+                       rowIntervention.push([data.container[i].date,data.container[i].type,data.container[i].statut,data.container[i].typeAnimal,data.container[i].entreprise,data.container[i].typeObjet,data.container[i].description,data.container[i].commentaire]);
+                    }
+                    console.log(data.container);
                    //rowIntervention.push([intervention.date,intervention.type, intervention.statut, intervention.typeAnimal, intervention.nomEntreprise, intervention.typeObjet]);
 
                    //Create a HTML Table element.
@@ -126,7 +122,7 @@ and open the template in the editor.
                     baliseCommentaire.html(comI);
                 }
             }
-            
+/*            
             function triTypeIntervention(listeIntervention, typeIntervention){
                 console.log("Tri en fonction du type");
                 var listeFiltree=listeIntervention;
@@ -149,34 +145,33 @@ and open the template in the editor.
                 return listeFiltree;
             }
             
-            function triStatutIntervention(listeIntervention, statut){
-                console.log("Tri en fonction du statut");
-                var listeFiltree=listeIntervention;
-                for (var i in listeIntervention){
-                    if (i.statut !== statut){
-                        listeFiltree.pop(i);
-                    }
+
+            function filtrage(){
+                $.ajax({
+                    url: './ActionServlet',
+                    method: 'POST',
+                    data: {
+                      action: 'consulterInterventions'
+          
+                    },
+                    dataType: 'json'
+                }).done(function(data) {                    
+                    $('#historique').empty();
+                    var listeIntervention = data.container;
+                    console.log("fonction triIntervention");
+                    var typeIntervention;
+                    var annee;
+                    var statut;
+                    console.log("filtrage");
+                if ($('#selectType').attr('checked')){
+                    typeIntervention = $('#choixType option:selected').val();
                 }
-                return listeFiltree;
-            }
-            
-            function triIntervention(listeIntervention){
-                console.log("fonction triIntervention");
-                var typeIntervention;
-                var annee;
-                var statut;
-                $('#bouton-filtrer').on('click',function() {
-                   console.log("filtrage");
-                   if ($('#selectType').attr('checked')){
-                       typeIntervention = $('#choixType option:selected').text();
-                   }
-                   if ($('#annee').attr('checked')){
-                       annee = $('#choixAnnee option:selected').text();
-                   }
-                   if ($("input[name='gender']:checked").val())
-                       statut = $("input[name='gender']:checked").val()
-                })
-                console.log(typeIntervention,annee,statut);
+                if ($('#annee').attr('checked')){
+                    annee = $('#choixAnnee option:selected').val();
+                }
+                if ($("input[name='gender']:checked").val())
+                    statut = $("input[name='gender']:checked").val();
+                 console.log("les options : "+typeIntervention+annee+statut);
                 
                 //Filtrage
                 var listeFiltree=listeIntervention;
@@ -195,8 +190,9 @@ and open the template in the editor.
                 for (var i in listeFiltree) {
                     ajouterInterventions(i);
                 }
-            }
-            
+            });
+        }
+        */
             $(document).ready(function(){
                 console.log("entré avant ajax");
                 $.ajax({
@@ -210,20 +206,11 @@ and open the template in the editor.
                 }).done(function(data) {                    
                     $('#historique').empty();
                     var interventions = data.container;
-                    console.log(interventions);
-                    /*var interventions = {
-                        {
-                            "date":2015,
-                            "annee"
-                        }
-                    }*/
-                    
+                    console.log(interventions);                    
                     ajouterInterventions(data);
-                    triIntervention();
                     return false;
                 });
             });
-            console.log("fin page]");
         </script>
     </body>
 </html>

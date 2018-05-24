@@ -21,22 +21,26 @@ public class ConnexionAction {
     public int execute (HttpServletRequest request){
          String mail=request.getParameter("mail");
          String mdp=request.getParameter("mdp");
+         System.out.println(mail+mdp);
          HttpSession session = request.getSession();
-         Long id=Long.valueOf(mdp);
-          
-         Client c=ServiceClient.connexionClient(mail, id);
-         if(c!=null){
-             session.setAttribute("client",c);
-             return 1;
-         }else{
-          Employe e=ServiceEmploye.connexionEmploye(mail, id); // j'ai passé la méthode en publique elle était privée avant
-          
-          if(e!=null){
-              System.out.println("Employé connecté: "+e);
-            session.setAttribute("employe",e);
-            return 2;
-         }
+         try {
+            Long id=Long.valueOf(mdp);
+            Client c=ServiceClient.connexionClient(mail, id);
+            if(c!=null){
+                session.setAttribute("client",c);
+                return 1;
+            }else{
+             Employe e=ServiceEmploye.connexionEmploye(mail, id); // j'ai passé la méthode en publique elle était privée avant
+
+             if(e!=null){
+                 System.out.println("Employé connecté: "+e);
+               session.setAttribute("employe",e);
+               return 2;
+            }
+           }
+            return 0;
+        } catch (Exception e) {
+            return 0;
         }
-         return 0;
     }
 }
